@@ -1,5 +1,5 @@
 interface Movie {
-  imdbID: number;
+  imdbID: string;
   Title: string;
   Type: string;
   Year: string;

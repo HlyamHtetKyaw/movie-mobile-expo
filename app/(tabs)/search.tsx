@@ -7,6 +7,7 @@ import useFetch from "@/services/useFetch";
 import {fetchMovies} from "@/services/api";
 import {icons} from "@/constants/icons";
 import SearchBar from "@/components/SearchBar";
+import {updateSearchCount} from "@/services/appwrite";
 
 const Search = () => {
     const [searchQuery, setSearchQuery] = useState("");
@@ -20,18 +21,23 @@ const Search = () => {
     } = useFetch(() => fetchMovies({
         query: searchQuery,
         page: 1
-    }),false);
-    useEffect(()=>{
-        const timeOutId = setTimeout(async ()=>{
-            if(searchQuery.trim()){
-                await loadMovie()
-            }else{
+    }), false);
+    const movieArray = movies?.Search || [];
+    useEffect(() => {
+        const timeOutId = setTimeout(async () => {
+            if (searchQuery.trim()) {
+                await loadMovie();
+                if(movieArray?.length>0 && movieArray?.[0]){
+                    console.log("updating")
+                    await updateSearchCount(searchQuery,movieArray[0])
+                }
+            } else {
                 reset()
             }
-        },500);
-        return ()=>clearTimeout(timeOutId)
-    },[searchQuery])
-    const movieArray = movies?.Search || [];
+        }, 500);
+        return () => clearTimeout(timeOutId)
+    }, [searchQuery])
+
     return (
         <View className="flex-1 bg-primary">
             <Image source={images.bg} className="flex-1 absolute w-full z-0" resizeMode="cover"/>
@@ -56,18 +62,18 @@ const Search = () => {
                             <SearchBar
                                 placeholder="Search anyghing you want"
                                 value={searchQuery}
-                                onChangeText={(text:string)=>setSearchQuery(text)}
+                                onChangeText={(text: string) => setSearchQuery(text)}
                             />
                         </View>
                         {moviesLoading &&
                             <ActivityIndicator size="large" color="#0000ff"/>
                         }
-                        {moviesError&&
+                        {moviesError &&
                             <Text className="text-red-500 px-5 py-3">
                                 Error: {moviesError.message}
                             </Text>
                         }
-                        {!moviesLoading && !moviesError && searchQuery.trim() && movieArray?.length>0 && (
+                        {!moviesLoading && !moviesError && searchQuery.trim() && movieArray?.length > 0 && (
                             <Text className="text-red-500 px-5 my-3">
                                 Search Result for{' '}
                                 <Text className="text-accent">{searchQuery}</Text>
@@ -76,11 +82,12 @@ const Search = () => {
                     </>
                 }
                 ListEmptyComponent={
-                !moviesLoading && !moviesError ? (
-                    <View className="mt-10 px-5">
-                        <Text className="text-center text-gray-500">{searchQuery.trim()?'No Movies Found':'Search For a Movie'}</Text>
-                    </View>
-                ):null
+                    !moviesLoading && !moviesError ? (
+                        <View className="mt-10 px-5">
+                            <Text
+                                className="text-center text-gray-500">{searchQuery.trim() ? 'No Movies Found' : 'Search For a Movie'}</Text>
+                        </View>
+                    ) : null
                 }
             />
         </View>
