@@ -6,6 +6,7 @@ import SearchBar from "@/components/SearchBar";
 import {useRouter} from "expo-router";
 import useFetch from "@/services/useFetch";
 import {fetchMovies} from "@/services/api";
+import MovieCard from "@/components/MovieCard";
 
 export default function Index() {
     const router = useRouter();
@@ -14,7 +15,7 @@ export default function Index() {
         loading: moviesLoading,
         error: moviesError
     } = useFetch(() => fetchMovies({
-        query: 'avengers',
+        query: 'iron man',
         page: 1
     }));
     const movieArray = movies?.Search || [];
@@ -57,7 +58,9 @@ export default function Index() {
                                     className="mt-2 pb-32"
                                     renderItem={
                                     ({item}) => (
-                                    <Text className="text-white">{item.Title}</Text>
+                                    <MovieCard
+                                        {...item}
+                                    />
                                 )
                                 }/>
                             </>
