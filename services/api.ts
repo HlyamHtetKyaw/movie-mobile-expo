@@ -1,17 +1,3 @@
-
-import Constants from "expo-constants";
-// const url = "";
-// const options ={
-//     method: 'GET',
-//     headers: {
-//         accept: 'application/json',
-//         Authorization: 'Bearer '
-//     }
-// };
-// fetch(url,options)
-//     .then(res=>res.json())
-//     .then(json=>console.log(json))
-//     .catch(err=>console.log)
 const MOVIE_API_CONFIG={
     BASE_URL: 'https://www.omdbapi.com/',
     API_KEY: process.env.EXPO_PUBLIC_MOVIE_API_KEY as string,
@@ -39,11 +25,22 @@ export const fetchMovies = async ({ query,page }: { query: string,page:number })
         });
 
         const response = await fetch(endpoint);
-        const data = await response.json();
-
-        return data;
+        return await response.json();
     } catch (error) {
         console.error("OMDb fetch error ", error);
         return null;
+    }
+};
+
+export const fetchMoviesDetails = async (movieId:string):Promise<MovieDetails>=>{
+    try{
+        const endpoint = buildUrl({
+            i: movieId
+        });
+        const response = await fetch(endpoint);
+        return await response.json();
+    }catch(err){
+        console.log(err);
+        throw err;
     }
 };
