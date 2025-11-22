@@ -27,10 +27,7 @@ const Search = () => {
         const timeOutId = setTimeout(async () => {
             if (searchQuery.trim()) {
                 await loadMovie();
-                if(movieArray?.length>0 && movieArray?.[0]){
-                    console.log("updating")
-                    await updateSearchCount(searchQuery,movieArray[0])
-                }
+
             } else {
                 reset()
             }
@@ -38,6 +35,12 @@ const Search = () => {
         return () => clearTimeout(timeOutId)
     }, [searchQuery])
 
+    useEffect(() => {
+        if(movieArray?.length>0 && movieArray?.[0]){
+            console.log("updating")
+            updateSearchCount(searchQuery,movieArray[0])
+        }
+    }, [movies]);
     return (
         <View className="flex-1 bg-primary">
             <Image source={images.bg} className="flex-1 absolute w-full z-0" resizeMode="cover"/>

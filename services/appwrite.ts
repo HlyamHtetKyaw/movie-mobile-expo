@@ -12,7 +12,7 @@ const client = new Client()
 const database = new Databases(client);
 
 export const updateSearchCount = async (query: string, movie: Movie) => {
-    try{
+    try {
         const result = await database.listDocuments({
             databaseId: DATABASE_ID, collectionId: TABLE_ID, queries: [
                 Query.equal('searchTerm', query)
@@ -34,12 +34,29 @@ export const updateSearchCount = async (query: string, movie: Movie) => {
                     searchTerm: query,
                     movieId: movie.imdbID as string,
                     count: 1,
-                    title:movie.Title
+                    title: movie.Title
                 }
             })
         }
-    }catch(err){
+    } catch (err) {
         console.log(err)
         throw err;
     }
 }
+
+export const getTrendingMovies = async (): Promise<TrendingMovie[] | undefined> => {
+    try{
+        const result = await database.listDocuments({
+            databaseId:DATABASE_ID,
+            collectionId:TABLE_ID,
+            queries:[
+                Query.limit(5),
+                Query.orderDesc('count'),
+            ]
+        });
+        return result.documents as unknown as TrendingMovie[];
+    }catch(err){
+        console.log(err);
+        return undefined;
+    }
+};
